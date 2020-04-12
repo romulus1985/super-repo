@@ -57,6 +57,14 @@ function setRepoUrl() {
    fi
 }
 
+function forceSetMirrorUrl(){
+  # force replate url in .repo/manifests/
+  echo "force set mirror url to manifest"
+  # replace https://android.googlesource.com with https://aosp.tuna.tsinghua.edu.cn
+  find .repo/manifests/ -name *.xml | xargs sed -i -e "s#\(fetch=\"\)https://android.googlesource.com/\"#\1https://aosp.tuna.tsinghua.edu.cn\"#g"
+
+}
+
 isNetworkConnected
 if [ $? != 0 ]; then 
     return 1
@@ -68,6 +76,8 @@ setRepoUrl
 repo_init_url=$(getRepoInitUrl)
 echo "repo_init_url=$repo_init_url"
 ${repo_init_url}
+
+forceSetMirrorUrl
 
 runRepoSync
 while [ $? -ne 0 ]
