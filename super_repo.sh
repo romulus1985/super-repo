@@ -84,3 +84,7 @@ while [ $? -ne 0 ]
 do
     runRepoSync
 done
+
+# clean temp file created when download failed.
+echo "Download success. Clean temp files in .repo/project-objects/"
+find .repo/project-objects/ -name "tmp_*" | xargs rm
