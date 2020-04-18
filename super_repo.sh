@@ -3,6 +3,8 @@ echo "start get android source code"
 
 source .config
 source .mirror/mirror.sh
+# override the same config in mirror
+source .config
 
 function downloadRepo() {
    echo "SUPER_MIRROR_DOWNLOAD_REPO_CMD = $SUPER_MIRROR_DOWNLOAD_REPO_CMD"
