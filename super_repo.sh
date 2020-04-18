@@ -7,7 +7,7 @@ source .mirror/mirror.sh
 source .config
 
 function downloadRepo() {
-   echo "SUPER_MIRROR_DOWNLOAD_REPO_CMD = $SUPER_MIRROR_DOWNLOAD_REPO_CMD"
+   #echo "SUPER_MIRROR_DOWNLOAD_REPO_CMD = $SUPER_MIRROR_DOWNLOAD_REPO_CMD"
    download_url="$SUPER_MIRROR_DOWNLOAD_REPO_CMD repo"
    echo "download_url=$download_url"
    ${download_url}
@@ -52,9 +52,9 @@ function setRepoUrl() {
 function forceSetMirrorUrl(){
   # force replate url in .repo/manifests/
   echo "force set mirror url to manifest"
-  # replace https://android.googlesource.com with https://aosp.tuna.tsinghua.edu.cn
-  # FIXME
-  find .repo/manifests/ -name *.xml | xargs sed -i -e "s#\(fetch=\"\)https://android.googlesource.com/\"#\1https://aosp.tuna.tsinghua.edu.cn\"#g"
+  # replace https://android.googlesource.com with mirror host 
+  # For example: https://aosp.tuna.tsinghua.edu.cn
+  find .repo/manifests/ -name *.xml | xargs sed -i -e "s#\(fetch=\"\)https://android.googlesource.com/\"#\1$SUPRE_MIRROR_HOST\"#g"
 
 }
 
@@ -77,7 +77,7 @@ while [ $? -ne 0 ]
 do
    # clean temp file created when download failed.
    echo "Download failed. Clean temp files in .repo/project-objects/"
-   find .repo/project-objects/ -name "tmp_*" | xargs rm
-    runRepoSync
+   find .repo/project-objects/ -name "tmp_*" | xargs rm -rf
+   runRepoSync
 done
 echo "Download success."
