@@ -40,9 +40,9 @@ function createRepo() {
 }
 
 function runRepoSync() {
-   repo_sync="repo sync $SUPER_REPO_SYNC"
-   echo "$repo_sync"
-   ./${repo_sync}
+   repo_sync="./repo sync $SUPER_REPO_SYNC"
+   echo "repo_sync=$repo_sync"
+   ${repo_sync}
 }
 
 function setRepoUrl() {
@@ -60,7 +60,7 @@ function forceSetMirrorUrl(){
 
 isNetworkConnected
 if [ $? != 0 ]; then 
-    return 1
+    exit 1
 fi
 
 createRepo
