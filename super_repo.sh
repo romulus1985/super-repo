@@ -6,6 +6,8 @@ source .mirror/mirror.sh
 # override the same config in mirror
 source .config
 
+count=0
+
 function downloadRepo() {
    #echo "SUPER_MIRROR_DOWNLOAD_REPO_CMD = $SUPER_MIRROR_DOWNLOAD_REPO_CMD"
    download_url="$SUPER_MIRROR_DOWNLOAD_REPO_CMD repo"
@@ -39,8 +41,41 @@ function createRepo() {
     chmod +x repo
 }
 
+function getSyncMode() {
+   # 1 : fast mode; 0 : proxy mode
+   mycount=$1
+   if [ "$mycount" -gt 10 ]
+   then
+      ret=$(expr $mycount % 2)
+      if [ 0 == "$ret" ] 
+      then
+         return 0
+      else
+         return 1
+      fi 
+   else
+      return 1
+   fi
+}
+
 function runRepoSync() {
-   repo_sync="./repo sync $SUPER_REPO_SYNC"
+   sleep 3
+   count=$(($count+1))
+   getSyncMode "$count"
+   if [ 0 == $? ] 
+   then
+      # proxy mode
+      echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=0
+      j_ops=" -j1 "
+   else
+      # fast mode
+      echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=1
+      j_ops=" $SUPER_REPO_JOBS "
+   fi
+   win_scale=$(cat /proc/sys/net/ipv4/tcp_window_scaling)
+   echo "count = $count j_ops=$j_ops tcp_window_scaling=$win_scale"
+   #repo_sync="./repo sync $SUPER_REPO_SYNC"
+   repo_sync="./repo sync $j_ops $SUPER_REPO_SYNC"
    echo "repo_sync=$repo_sync"
    ${repo_sync}
 }
