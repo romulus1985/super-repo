@@ -58,6 +58,11 @@ function getSyncMode() {
    fi
 }
 
+function setWindowScaling() {
+   echo "setWindowScaling to $1"
+   echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=$1
+}
+
 function runRepoSync() {
    sleep 3
    count=$(($count+1))
@@ -65,11 +70,11 @@ function runRepoSync() {
    if [ 0 == $? ] 
    then
       # proxy mode
-      echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=0
+      setWindowScaling 0
       j_ops=" -j1 "
    else
       # fast mode
-      echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=1
+      setWindowScaling 1
       j_ops=" $SUPER_REPO_JOBS "
    fi
    win_scale=$(cat /proc/sys/net/ipv4/tcp_window_scaling)
@@ -115,4 +120,7 @@ do
    find .repo/project-objects/ -name "tmp_*" | xargs rm -rf
    runRepoSync
 done
+
+# setWindowScaling as enable
+setWindowScaling 1
 echo "Download success."
