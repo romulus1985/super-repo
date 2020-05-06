@@ -7,6 +7,7 @@ source .mirror/mirror.sh
 source .config
 
 count=0
+python_version=
 
 function downloadRepo() {
    #echo "SUPER_MIRROR_DOWNLOAD_REPO_CMD = $SUPER_MIRROR_DOWNLOAD_REPO_CMD"
@@ -43,8 +44,10 @@ function createRepo() {
 
 function getSyncMode() {
    # 1 : fast mode; 0 : proxy mode
+   #echo "SUPER_REPO_PRE_FAST_JOS_TIMES = $SUPER_REPO_PRE_FAST_JOS_TIMES"
    mycount=$1
-   if [ "$mycount" -gt 10 ]
+   # if [ "$mycount" -gt 10 ]
+   if [ "$mycount" -gt "$SUPER_REPO_PRE_FAST_JOS_TIMES" ]
    then
       ret=$(expr $mycount % 2)
       if [ 0 == "$ret" ] 
@@ -98,6 +101,10 @@ function forceSetMirrorUrl(){
 
 }
 
+function getPythonVersion() {
+   python_version=$(python -V 2>&1)
+}
+
 isNetworkConnected
 if [ $? != 0 ]; then 
     exit 1
@@ -105,6 +112,9 @@ fi
 
 createRepo
 setRepoUrl
+
+getPythonVersion
+echo "python version = $python_version"
 
 repo_init_url=$(getRepoInitUrl)
 echo "repo_init_url=$repo_init_url"
@@ -123,4 +133,4 @@ done
 
 # setWindowScaling as enable
 setWindowScaling 1
-echo "Download success."
+echo "Download success with $count attempts."
