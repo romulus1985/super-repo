@@ -61,7 +61,7 @@ function getSyncMode() {
 
 function setWindowScaling() {
    echo "setWindowScaling to $1"
-   echo "121121" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=$1
+   echo "$SUPER_REPO_SUDO_PASSWORD" | sudo -S sysctl -w net.ipv4.tcp_window_scaling=$1
 }
 
 function runRepoSync() {
@@ -79,7 +79,6 @@ function runRepoSync() {
    fi
    win_scale=$(cat /proc/sys/net/ipv4/tcp_window_scaling)
    echo "count = $count j_ops=$j_ops tcp_window_scaling=$win_scale"
-   #repo_sync="./repo sync $SUPER_REPO_SYNC"
    repo_sync="./repo sync $j_ops $SUPER_REPO_SYNC"
    echo "repo_sync=$repo_sync"
    ${repo_sync}
